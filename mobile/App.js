@@ -1,4 +1,24 @@
-import React, {Component} from 'react';
+// Import the screens
+import LoginScreen from './components/Login';
+import RegisterScreen from './components/Register';
+import HomeScreen from './components/Home';
+
+// Import React Navigation
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+
+// Create the navigator
+const RootStack = createStackNavigator({
+  Login: { screen: LoginScreen },
+  Register: { screen: RegisterScreen },
+  Home: { screen: HomeScreen }
+});
+
+// Export it as the root component
+const App = createAppContainer(RootStack);
+
+export default App;
+
+/*import React, {Component} from 'react';
 import {TextInput, StyleSheet, Text, View, Alert} from 'react-native';
 import io from 'socket.io-client';
 
@@ -57,4 +77,4 @@ const styles = StyleSheet.create({
     //alignItems: 'center',
     backgroundColor: '#F5FCFF',
   }
-});
+});*/

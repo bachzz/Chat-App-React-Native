@@ -7,5 +7,10 @@ Mobile app for SE final project
 	- run android emulator
 	- `cd mobile && react-native run-android`
 
-## History commit
+## Notes
+- `api-backend`: handles 1 way request: client -> server. For: login, register,... 
+- `socket-backend`: handles 2 way communication: client <-> server. For: send msg, receive msg, dispatch msg,...
+
+## History commits
 - `v1.0.0`: basic chat: client sends msg => server receives, dispatches msg to all clients
+
