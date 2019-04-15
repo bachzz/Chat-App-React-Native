@@ -14,7 +14,7 @@ export default class App extends Component<> {
   }
 
   componentDidMount(){
-    this.socket = io("http://10.0.2.2:3000");
+    this.socket = io("http://10.0.2.2:3000"); // 10.0.2.2 is localhost of main machine for emulator
     this.socket.emit("login", this.state.username);
     this.socket.on("chat-message", msg => {
       this.setState({chatMessages: [...this.state.chatMessages, msg]});
