@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Button, Alert, TextInput, View } from 'react-native';
 import axios from 'axios';
 
-axios.defaults.baseURL = "http://10.0.2.2:4000";
+axios.defaults.baseURL = "http://192.168.46.129:5000";//"http://10.0.2.2:4000";
 
 class LoginScreen extends Component {
   static navigationOptions = {
@@ -12,16 +12,20 @@ class LoginScreen extends Component {
   constructor(props){
     super(props);
     this.state = {
-      email: "",
+      name: "",
       password: "",
     }
   }
 
   async handleLogin(){
     try {
-      const {email , password} = this.state;
-      const result = await axios.post("/auth/login", {email, password});
-      Alert.alert("Email=" + result.data.email + " Password=" + result.data.password + " Token=" + result.data.token);
+      const {name , password} = this.state;
+      const formData = new FormData();
+      formData.append('username', this.state.username);
+      formData.append('password', this.state.password);
+
+      const result = await axios.post("/login", formData);//{name, password});
+      //Alert.alert("Email=" + result.data.email + " Password=" + result.data.password + " Token=" + result.data.token);
     } catch (error){
       console.error(error);
     }
@@ -32,20 +36,20 @@ class LoginScreen extends Component {
       <View style={styles.container}>
         <TextInput
           style = {{height: 40, borderWidth: 2}}
-          value = {this.state.email}
-          keyboardType = "email-address"
-          placeholder = "your@email.com"
+          value = {this.state.name}
+          //keyboardType = "email-address"
+          placeholder = "Name"
           autoCapitalize = "none"
           autoCorrect  = {false}
           //onSubmitEditing = {() => this.submitChatMessage()}
-          onChangeText ={emailInput => {
-            this.setState({email: emailInput});
+          onChangeText ={nameInput => {
+            this.setState({name: nameInput});
           }}
         />
         <TextInput
           style = {{height: 40, borderWidth: 2}}
           value = {this.state.password}
-          placeholder = "password"
+          placeholder = "Password"
           autoCapitalize = "none"
           autoCorrect  = {false}
           secureTextEntry

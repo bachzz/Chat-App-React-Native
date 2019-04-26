@@ -26,6 +26,7 @@ const login = (req, res) => {
     password: req.body.password,
     token: '12345'
   };
+  console.log(msg);
   res.status(200).json(msg);
 }
 

@@ -18,7 +18,12 @@ const App = createAppContainer(RootStack);
 
 export default App;
 
-/*import React, {Component} from 'react';
+
+
+// CLIENT - SOCKET
+
+/*
+import React, {Component} from 'react';
 import {TextInput, StyleSheet, Text, View, Alert} from 'react-native';
 import io from 'socket.io-client';
 
@@ -77,4 +82,5 @@ const styles = StyleSheet.create({
     //alignItems: 'center',
     backgroundColor: '#F5FCFF',
   }
-});*/
+});
+*/
