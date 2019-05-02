@@ -25,7 +25,7 @@ class RegisterScreen extends Component {
       formData.append('password', this.state.password);
       const result = await axios.post("/users/register", formData);//{username, password});
       //Alert.alert("HELLO!");
-      Alert.alert(result.data);
+      Alert.alert(JSON.stringify(result.data));
       //Alert.alert("Email=" + result.data.name + " Password=" + result.data.password + " Token=" + result.data.token);
     } catch (error){
       console.error(error);
