@@ -1,0 +1,2 @@
+global.jwt = "";
+global.username = "";
