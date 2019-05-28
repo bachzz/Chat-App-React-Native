@@ -1,12 +1,19 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Button, TextInput, TouchableOpacity, Alert, Image, Text, DrawerLayoutAndroid } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import io from 'socket.io-client';
 //import Header from './Header';
 import {DrawerNavigator, createDrawerNavigator} from 'react-navigation';
 import axios from 'axios';
 import './creds.js';
+import { YellowBox } from 'react-native';
 
-axios.defaults.baseURL = "http://192.168.46.129:5000";
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
+YellowBox.ignoreWarnings(['Setting a timer']);
+
+axios.defaults.baseURL = "https://ict-chatapp.herokuapp.com/";//"http://192.168.46.129:5000";
 
 class HomeScreen extends Component {
 
@@ -14,8 +21,8 @@ class HomeScreen extends Component {
     super(props);
     this.state = {
       onIndex: 0,
-      onChannelId: "",
-      listChannels: [
+      onChannelId: "0",
+      listChannels: [ // DUMMY SAMPLEs
           {
             "title":"#general",
             "onPress": this.channelOnPress.bind(this, "#general", 0),
@@ -152,6 +159,11 @@ class HomeScreen extends Component {
     })
   }
 
+  async updateNewChannel(channel){
+    await this.reloadChannels();
+    this.reloadMessages();
+  }
+
   async reloadChannels(){
     /* get list of channel */
     let channels = await this.getChannelList();
@@ -184,6 +196,16 @@ class HomeScreen extends Component {
 
     /* Reload messages in current channel */
     this.reloadMessages();
+
+    /* Listen to socket for incoming messages */
+    this.socket = io("https://ict-chatapp.herokuapp.com/", { transports: ['websocket'], forceNew: true, pingTimeout: 30000 });//io("http://192.168.46.129:5000"); // 10.0.2.2 is localhost of main machine for emulator
+    this.socket.on("new_message", msg => {
+      this.reloadMessages();
+    });
+
+    this.socket.on("new_channel", msg => {
+      this.updateNewChannel(msg);
+    });
   }
 
   async sendMessage(message){
@@ -228,6 +250,7 @@ class HomeScreen extends Component {
     /* Join new channel */
     await this.joinChannel(this.state.listChannels[index-1].id);
     this.setState({onIndex: index-1});
+    this.props.navigation.setParams({Title: "#"+channelName});
 
     /* Reload messages in current channel */
     this.reloadMessages();
