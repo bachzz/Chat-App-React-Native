@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Button, TextInput, TouchableOpacity, Alert, Image, Text, DrawerLayoutAndroid } from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, Composer } from 'react-native-gifted-chat'
 import io from 'socket.io-client';
 //import Header from './Header';
 import {DrawerNavigator, createDrawerNavigator} from 'react-navigation';
@@ -30,20 +30,11 @@ class HomeScreen extends Component {
             "msgs": [
               {
                 _id: "asdfasd",
-                text: 'Hello world!',
+                text: '',
                 createdAt: new Date(),
                 user: {
                   _id: 2,
                   name: 'React Native',
-                },
-              },
-              {
-                _id: "123asdf",
-                text: 'Hello world!',
-                createdAt: new Date(),
-                user: {
-                  _id: 1,
-                  name: 'Bach Nguyen',
                 },
               },
             ],
@@ -57,8 +48,20 @@ class HomeScreen extends Component {
   static navigationOptions = ({navigation}) => {
     const { params } = navigation.state;
 
+    // header: navigation => ({
+    //   style: {
+    //     backgroundColor: '#1e2124',
+    //   }
+    // });
+
     return {
          title: navigation.getParam('Title', '#general'),
+         headerStyle: {
+           backgroundColor: '#1e2124',
+         },
+         headerTitleStyle: {
+           color: '#f2f2f2',
+         },
     }
   }
 
@@ -261,16 +264,21 @@ class HomeScreen extends Component {
     this.reloadMessages();
   }
 
-
+  renderComposer(props) {
+     return <Composer
+               {...props}
+               placeholder={'Type a message...'}
+            />;
+  }
 
   render() {
 
     /* DRAWER */
     const navigationView = (
-        <View style={{ flex:1, flexDirection: 'column',backgroundColor: '#fff'}}>
+        <View style={{ flex:1, flexDirection: 'column', backgroundColor:'#1e2124'}}>
           <View style={{height: 40, flexDirection: 'row',  justifyContent: 'space-between',}}>
             <TextInput
-              style={{height: 40, width: 260}}
+              style={{height: 40, width: 260, backgroundColor: 'grey'}}
               placeholder="Enter channel name"
               onChangeText={(channelName) => this.setState({channelName})}
             />
@@ -294,7 +302,7 @@ class HomeScreen extends Component {
                     style={this.state.onIndex == index ? styles.buttonOn : styles.buttonOff}
                     onPress = {channel.onPress}
                   >
-                    <Text> #{channel.title} </Text>
+                    <Text style = {this.state.onIndex == index ? styles.textOn : styles.textOff}> #{channel.title} </Text>
                   </TouchableOpacity>
                 )
               }
@@ -305,15 +313,18 @@ class HomeScreen extends Component {
       );
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#36393e' }}>
         <DrawerLayoutAndroid
+        drawerBackgroundColor= '#1e2124'
         drawerWidth={300}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={() => navigationView}>
 
           <GiftedChat
             messages={this.state.listChannels[this.state.onIndex].msgs}
+            renderComposer={props => this.renderComposer(props)}
             onSend={messages => this.onSend(messages)}
+            style = {styles.chat}
             user={{
               _id: 1,
               name: global.username,
@@ -343,13 +354,19 @@ const styles = StyleSheet.create({
   },
   buttonOn: {
     alignItems: 'center',
-    backgroundColor: '#DDDDDD',
+    backgroundColor: '#36393e',
     padding: 10
   },
   buttonOff: {
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#1e2124',
     padding: 10
+  },
+  textOn: {
+    color: 'white',
+  },
+  textOff: {
+    color: 'grey',
   },
 });
 
