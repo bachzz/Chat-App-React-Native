@@ -6,7 +6,8 @@ import { TextInputLayout } from 'rn-textinputlayout';
 import axios from 'axios';
 import './creds.js';
 
-axios.defaults.baseURL = "https://ict-chatapp.herokuapp.com/";//"http://192.168.46.129:5000";//"http://10.0.2.2:4000";
+axios.defaults.baseURL = "https://ict-chatapp.herokuapp.com/";
+//axios.defaults.baseURL = "http://b50ac020.ngrok.io";//"https://ict-chatapp.herokuapp.com/";//"http://192.168.46.129:5000";//"http://10.0.2.2:4000";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 

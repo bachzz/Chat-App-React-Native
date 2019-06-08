@@ -13,7 +13,8 @@ YellowBox.ignoreWarnings([
 ]);
 YellowBox.ignoreWarnings(['Setting a timer']);
 
-axios.defaults.baseURL = "https://ict-chatapp.herokuapp.com/";//"http://192.168.46.129:5000";
+axios.defaults.baseURL = "https://ict-chatapp.herokuapp.com/";
+//axios.defaults.baseURL = "http://b50ac020.ngrok.io";//"https://ict-chatapp.herokuapp.com/";//"http://192.168.46.129:5000";
 
 class HomeScreen extends Component {
 
@@ -24,8 +25,8 @@ class HomeScreen extends Component {
       onChannelId: "0",
       listChannels: [ // DUMMY SAMPLEs
           {
-            "title":"#general",
-            "onPress": this.channelOnPress.bind(this, "#general", 0),
+            "title":"general",
+            "onPress": this.channelOnPress.bind(this, "general", 0),
             "msgs": [
               {
                 _id: "asdfasd",
@@ -128,14 +129,16 @@ class HomeScreen extends Component {
     /* Get all messages in current channel */
     let messages = await this.getMessages();
     messages = messages.map((message) => {
-      let user_tmp = JSON.parse(message.text).user;
-      if (user_tmp.name !== global.username){
-        user_tmp._id = user_tmp._id == 1 ? 2:1;
-      }
+      let user_name = message.sender;
+      let user_tmp = {
+        _id: user_name == global.username ? 1:2,
+        name: user_name,
+      };
+
       let msg = {
-        _id : JSON.parse(message.text)._id,
-        text: JSON.parse(message.text).text,
-        created_at: JSON.parse(message.text).created_at,
+        _id : message.id,
+        text: message.text,
+        created_at: message.created_at,
         user: user_tmp,
       }
       return msg;
@@ -199,6 +202,7 @@ class HomeScreen extends Component {
 
     /* Listen to socket for incoming messages */
     this.socket = io("https://ict-chatapp.herokuapp.com/", { transports: ['websocket'], forceNew: true, pingTimeout: 30000 });//io("http://192.168.46.129:5000"); // 10.0.2.2 is localhost of main machine for emulator
+    //this.socket = io("http://b50ac020.ngrok.io", { transports: ['websocket'], forceNew: true, pingTimeout: 30000 });
     this.socket.on("new_message", msg => {
       this.reloadMessages();
     });
@@ -210,13 +214,14 @@ class HomeScreen extends Component {
 
   async sendMessage(message){
     try {
+      //Alert.alert("debug", JSON.stringify(message));
       let header = {
         headers: {
           Authorization: 'Bearer ' + global.jwt,
         }
       }
       const result = await axios.post("/message", {
-        msg: JSON.stringify(message),
+        msg: message.text,
       }, header);
     } catch (error) {
       console.error(error);
@@ -229,7 +234,7 @@ class HomeScreen extends Component {
   }
 
   async channelOnPress(channelName, index){
-    this.props.navigation.setParams({Title: channelName});
+    this.props.navigation.setParams({Title: "#"+channelName});
 
     /* Join channel */
     await this.joinChannel(this.state.listChannels[index].id);
@@ -241,7 +246,7 @@ class HomeScreen extends Component {
 
   async addChannel(channelName) {
     /* send channel to server */
-    await this.sendChannel("#"+channelName);
+    await this.sendChannel(channelName);
 
     /* reload channels */
     await this.reloadChannels();
@@ -289,7 +294,7 @@ class HomeScreen extends Component {
                     style={this.state.onIndex == index ? styles.buttonOn : styles.buttonOff}
                     onPress = {channel.onPress}
                   >
-                    <Text> {channel.title} </Text>
+                    <Text> #{channel.title} </Text>
                   </TouchableOpacity>
                 )
               }
