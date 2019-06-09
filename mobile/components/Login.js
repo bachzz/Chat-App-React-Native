@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, KeyboardAvoidingView, ScrollView, TextInput, View, Text, Dimensions, TouchableHighlight, Alert } from 'react-native';
-import { IndicatorViewPager, PagerTitleIndicator } from 'rn-viewpager';
-import { TextInputLayout } from 'rn-textinputlayout';
+import { StyleSheet, TextInput, View, Text, Dimensions, TouchableHighlight, Alert, ActivityIndicator } from 'react-native';
+import { IndicatorViewPager, PagerTitleIndicator } from 'rn-viewpager'; ``
+//import { TextInputLayout } from 'rn-textinputlayout';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import axios from 'axios';
 import './creds.js';
@@ -28,10 +30,12 @@ class LoginScreen extends Component {
       signupConfirm: "",
 
       viewPager: "",
+      isLoginLoading: false,
     }
   }
 
   async handleLogin() {
+    this.setState({ isLoginLoading: true });
     try {
       const result = await axios.post("/user/login", {
         "username": this.state.loginName,
@@ -41,6 +45,7 @@ class LoginScreen extends Component {
       global.jwt = result.data.jwt;
       global.username = this.state.loginName;
       //Alert.alert("jwt",global.jwt);
+      this.setState({ isLoginLoading: false });
       this.props.navigation.navigate('Home');
     } catch (error) {
       //Alert.alert("error",error.response.data);
@@ -79,10 +84,13 @@ class LoginScreen extends Component {
   renderLogin() {
     return (
       <View>
-        <TextInputLayout
-          style={styles.inputFieldLayout}
-          focusColor="#ff0266"
-        >
+        <View style={styles.inputContainer}>
+          <FontAwesome
+            name="user-o"
+            size={24}
+            color="white"
+            style={{ alignSelf: 'flex-end' }}
+          />
           <TextInput
             style={styles.inputField}
             value={this.state.loginName}
@@ -96,11 +104,15 @@ class LoginScreen extends Component {
               this.setState({ loginName: nameInput });
             }}
           />
-        </TextInputLayout>
-        <TextInputLayout
-          style={styles.inputFieldLayout}
-          focusColor="#ff0266"
-        >
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Feather
+            name="key"
+            size={24}
+            color="white"
+            style={{ alignSelf: 'flex-end' }}
+          />
           <TextInput
             style={styles.inputField}
             value={this.state.password}
@@ -113,13 +125,14 @@ class LoginScreen extends Component {
             onChangeText={passInput => {
               this.setState({ loginPassword: passInput });
             }}
-
           />
-        </TextInputLayout>
+        </View>
         <TouchableHighlight
           style={styles.loginButton}
           onPress={() => this.handleLogin()}>
-          <Text style={styles.loginText}>LOGIN</Text>
+          {this.state.isLoginLoading === true
+            ? <ActivityIndicator size="large" color="#0000ff" />
+            : <Text style={styles.loginText}>LOGIN</Text>}
         </TouchableHighlight>
 
       </View>
@@ -129,10 +142,13 @@ class LoginScreen extends Component {
   renderSignUp() {
     return (
       <View>
-        <TextInputLayout
-          style={styles.inputFieldLayout}
-          focusColor="#ff0266"
-        >
+        <View style={styles.inputContainer}>
+          <FontAwesome
+            name="user-o"
+            size={24}
+            color="white"
+            style={{ alignSelf: 'flex-end' }}
+          />
           <TextInput
             style={styles.inputField}
             value={this.state.signupName}
@@ -146,12 +162,14 @@ class LoginScreen extends Component {
               this.setState({ signupName: nameInput });
             }}
           />
-        </TextInputLayout>
-
-        <TextInputLayout
-          style={styles.inputFieldLayout}
-          focusColor="#ff0266"
-        >
+        </View>
+        <View style={styles.inputContainer}>
+          <Feather
+            name="key"
+            size={24}
+            color="white"
+            style={{ alignSelf: 'flex-end' }}
+          />
           <TextInput
             style={styles.inputField}
             value={this.state.password}
@@ -165,12 +183,14 @@ class LoginScreen extends Component {
               this.setState({ signupPassword: passInput });
             }}
           />
-        </TextInputLayout>
-
-        <TextInputLayout
-          style={styles.inputFieldLayout}
-          focusColor="#ff0266"
-        >
+        </View> 
+        <View style={styles.inputContainer}>
+          <FontAwesome
+            name="key"
+            size={24}
+            color="white"
+            style={{ alignSelf: 'flex-end' }}
+          />
           <TextInput
             style={styles.inputField}
             value={this.state.password}
@@ -179,7 +199,7 @@ class LoginScreen extends Component {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
-            onSubmitEditing = {() => {
+            onSubmitEditing={() => {
               if (this.state.signupPassword !== this.state.signupConfirm)
                 Alert.alert("Warning", "Comfirmed password not matched!");
             }}
@@ -187,8 +207,8 @@ class LoginScreen extends Component {
               this.setState({ signupConfirm: passInput });
             }}
           />
-        </TextInputLayout>
-
+        </View>
+        {/* </TextInputLayout> */}
 
 
         <TouchableHighlight
@@ -235,15 +255,18 @@ const styles = StyleSheet.create({
   indicatorSelectedItem: {
     width: windowWidth / 2,
     backgroundColor: '#1e2124',
+    borderBottomWidth: 2,
+    borderBottomColor: "#199187",
   },
   indicatorText: {
     fontSize: 20,
-    color: 'black',
+    color: 'grey',
 
   },
   indicatorSelectedText: {
     fontSize: 20,
     color: 'white',
+    fontWeight: "bold",
   },
   selectedBorderStyle: {
     backgroundColor: '#1e2124',
@@ -255,19 +278,34 @@ const styles = StyleSheet.create({
   inputField: {
     padding: 5,
     height: 40,
-    fontSize: 12,
+    fontSize: 14,
     color: 'white',
+    marginLeft: 8,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    marginVertical: 16,
+    marginHorizontal: 32,
+    padding: 5,
+    height: 40,
+    color: 'white',
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
   },
   loginButton: {
-    borderRadius: 3,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    alignItems: 'center',
+    borderRadius: 8,
+    marginVertical: 24,
+    marginHorizontal: 32,
     padding: 5,
-    backgroundColor: 'grey',
+    backgroundColor: '#59cbbd',
+    paddingVertical: 8,
   },
   loginText: {
     textAlign: "center",
     fontSize: 18,
+    fontWeight: "500",
     color: 'black',
   }
 });

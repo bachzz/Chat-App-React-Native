@@ -8,7 +8,6 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 // Create the navigator
 const RootStack = createStackNavigator({
-  //Home: { screen: HomeScreen },
   Login: { screen: LoginScreen },
   Home: { screen: HomeScreen },
   //Register: { screen: RegisterScreen },
